@@ -1,54 +1,44 @@
 <?php
 session_start();
-include __DIR__ . "/../../../config/connection.php";
+include '../../../config/connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-    $nama_petugas = trim($_POST['nama_petugas']);
-    $id_level = trim($_POST['id_level']); // admin / petugas
+    $username   = trim($_POST['username']);
+    $password   = trim($_POST['password']);
+    $full_name  = trim($_POST['full_name']);
+    $email      = trim($_POST['email']);
+    $phone      = trim($_POST['phone']);
+    $role_id    = intval($_POST['role_id']); // 1=admin, 2=petugas, 3=jamaah
 
-    // Validasi sederhana
-    if (empty($username) || empty($password) || empty($nama_petugas)) {
-        echo "<script>
-            alert('Semua field harus diisi!');
-            window.location.href='register.php';
-        </script>";
-        exit();
-    }
-
-    // ✅ Cek username sudah dipakai atau belum
-    $check = $conn->prepare("SELECT * FROM petugas WHERE username = ?");
+    // 🔹 Cek apakah username sudah dipakai
+    $check = $conn->prepare("SELECT id FROM users WHERE username = ?");
     $check->bind_param("s", $username);
     $check->execute();
     $result = $check->get_result();
 
     if ($result->num_rows > 0) {
-        echo "<script>
-            alert('Username sudah digunakan, silakan pilih yang lain!');
-            window.location.href='../../pages/users/register.php';
-        </script>";
+        $_SESSION['register_error'] = 'Username sudah digunakan.';
+        header("Location: ../../pages/users/register.php");
         exit();
     }
 
-    // ✅ Hash password
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    // 🔹 Enkripsi password
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // ✅ Insert data
-    $sql = "INSERT INTO petugas (username, password, nama_petugas, id_level) 
-            VALUES (?, ?, ?, ?)";
-    $stmt = $connect->prepare($sql);
-    $stmt->bind_param("sssi", $username, $hashedPassword, $nama_petugas, $id_level);
+    // 🔹 Simpan user baru ke database
+    $stmt = $conn->prepare("
+        INSERT INTO users (username, password_hash, role_id, full_name, email, phone, is_active, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, 1, NOW())
+    ");
+    $stmt->bind_param("ssisss", $username, $password_hash, $role_id, $full_name, $email, $phone);
 
     if ($stmt->execute()) {
-        echo "<script>
-            alert('Registrasi berhasil! Silakan login.');
-            window.location.href='../../pages/users/login.php';
-        </script>";
+        $_SESSION['register_success'] = 'Registrasi berhasil! Silakan login.';
+        header("Location: ../../pages/users/login.php");
+        exit();
     } else {
-        echo "<script>
-            alert('Registrasi gagal, coba lagi.');
-            window.location.href='../../pages/users/register.php';
-        </script>";
+        $_SESSION['register_error'] = 'Terjadi kesalahan saat menyimpan data.';
+        header("Location: ../../pages/users/register.php");
+        exit();
     }
 }

@@ -1,103 +1,52 @@
-<div class="main-panel">
-    <div class="main-header">
-        <div class="main-header-logo">
-            <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
-                <a href="index.html" class="logo">
-                    <img
-                        src="../../tp-ad/assets/img/kaiadmin/logo_light.svg"
-                        alt="navbar brand"
-                        class="navbar-brand"
-                        height="20" />
-                </a>
-                <div class="nav-toggle">
-                    <button class="btn btn-toggle toggle-sidebar">
-                        <i class="gg-menu-right"></i>
-                    </button>
-                    <button class="btn btn-toggle sidenav-toggler">
-                        <i class="gg-menu-left"></i>
-                    </button>
-                </div>
-                <button class="topbar-toggler more">
-                    <i class="gg-more-vertical-alt"></i>
-                </button>
-            </div>
-            <!-- End Logo Header -->
+<?php
+$fullName = $_SESSION['full_name'] ?? 'Guest';
+$roleName = $_SESSION['role_name'] ?? 'Gueslt';
+?>
+
+<!-- ========== MAIN HEADER ========== -->
+<header class="main-header shadow-sm">
+    <div class="d-flex align-items-center justify-content-between px-4 py-2 bg-white border-bottom">
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-secondary toggle-sidebar" id="sidebarToggle">
+                <i class="fa fa-bars"></i>
+            </button>
+            <h5 class="fw-bold mb-0 text-secondary">Sistem Haji & Umroh</h5>
         </div>
-        <!-- Navbar Header -->
-        <nav
-            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-            <div class="container-fluid">
-              
 
-                <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                   
-                    <li class="nav-item topbar-icon dropdown hidden-caret">
-                        <ul
-                            class="dropdown-menu messages-notif-box animated fadeIn"
-                            aria-labelledby="messageDropdown">
-                            <li>
-                                <div
-                                    class="dropdown-title d-flex justify-content-between align-items-center">
-                                    Messages
-                                    <a href="#" class="small">Mark all as read</a>
-                                </div>
-                            </li>
-                           
-                            <li>
-                                <a class="see-all" href="javascript:void(0);">See all messages<i class="fa fa-angle-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                   
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
+                <img src="../../tp-ad/assets/img/person.svg"
+                    alt="Profile"
+                    class="rounded-circle me-2"
+                    width="40" height="40">
+                <div class="d-flex flex-column align-items-start">
+                    <span class="fw-semibold text-dark"><?= htmlspecialchars($fullName); ?></span>
+                    <small class="text-muted"><?= htmlspecialchars(ucfirst($roleName)); ?></small>
+                </div>
+                <i class="fa fa-caret-down ms-2 text-muted"></i>
+            </a>
 
-                    <li class="nav-item topbar-user dropdown hidden-caret">
-                        <a
-                            class="dropdown-toggle profile-pic"
-                            data-bs-toggle="dropdown"
-                            href="#"
-                            aria-expanded="false">
-                            <div class="avatar-sm">
-                                <img
-                                    src="../../tp-ad/assets/img/profile.jpg"
-                                    alt="..."
-                                    class="avatar-img rounded-circle" />
-                            </div>
-                            <span class="profile-username">
-                                <span class="op-7">Hi,</span>
-                                <span class="fw-bold">Hizrian</span>
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user animated fadeIn">
-                            <div class="dropdown-user-scroll scrollbar-outer">
-                                <li>
-                                    <div class="user-box">
-                                        <div class="avatar-lg">
-                                            <img
-                                                src="../../tp-ad/assets/img/profile.jpg"
-                                                alt="image profile"
-                                                class="avatar-img rounded" />
-                                        </div>
-                                        <a class="dropdown-item" href="#">Logout</a>
-                                        <!-- <div class="u-text">
-                                            <h4>Hizrian</h4>
-                                            <p class="text-muted">hello@example.com</p>
-                                            <a
-                                                href="profile.html"
-                                                class="btn btn-xs btn-secondary btn-sm">View Profile</a>
-                                        </div> -->
-                                    </div>
-                                </li>
-                                <li>
-
-
-                                </li>
-                            </div>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <!-- End Navbar -->
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2">
+                <li class="text-center px-3 py-2 border-bottom">
+                    <img src="../../tp-ad/assets/img/person.svg"
+                        alt="Profile"
+                        class="rounded-circle mb-2"
+                        width="70" height="70">
+                    <h6 class="fw-bold mb-0"><?= htmlspecialchars($fullName); ?></h6>
+                    <small class="text-muted"><?= htmlspecialchars(ucfirst($roleName)); ?></small>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a href="../../actions/auth/logout.php" class="dropdown-item text-danger fw-semibold">
+                        <i class="fa fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
+</header>
+
+<div class="main-panel">
+    <div class="content-wrapper px-4 py-4">

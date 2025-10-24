@@ -1,54 +1,53 @@
 <?php
+ob_start();
 session_start();
-include __DIR__ . "/../../../config/connection.php";
+include '../../../config/connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    if (empty($username) || empty($password)) {
-        echo "<script>alert('Username dan password wajib diisi!');window.location.href='../../pages/users/login.php';</script>";
-        exit();
-    }
-
-    // JOIN ke tabel level biar bisa ambil nama_level
+    // Ambil data user dari tabel users
     $sql = "
-        SELECT p.*, l.nama_level 
-        FROM petugas p
-        JOIN level l ON p.id_level = l.id_level
-        WHERE p.username = ?
+        SELECT u.*, r.role_name 
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        WHERE u.username = ? AND u.is_active = 1
+        LIMIT 1
     ";
-
     $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        die('Query gagal: ' . $conn->error);
-    }
-
     $stmt->bind_param('s', $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 1) {
-        $row = $result->fetch_assoc();
+    if ($user = $result->fetch_assoc()) {
+        // Verifikasi password
+        if (password_verify($password, $user['password_hash'])) {
+            // Simpan session (pastikan kolom sesuai database!)
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['full_name'] = $user['full_name']; // ubah ke 'nama_lengkap' kalau di DB kamu beda
+            $_SESSION['role_name'] = $user['role_name']; // pastikan kolom di tabel roles ada
 
-        if (password_verify($password, $row['password'])) {
-            // ✅ Simpan semua data ke session
-            $_SESSION['logged_in']    = true;
-            $_SESSION['id_petugas']   = $row['id_petugas'];
-            $_SESSION['username']     = $row['username'];
-            $_SESSION['nama_petugas'] = $row['nama_petugas'];
-            $_SESSION['id_level']     = $row['id_level'];
-            $_SESSION['level']        = strtolower($row['nama_level']); // penting!
+            // Simpan log ke audit_logs
+            $logSql = "INSERT INTO audit_logs (user_id, action, object_type, object_id, message, created_at)
+                       VALUES (?, 'login', 'users', ?, 'User login', NOW())";
+            $logStmt = $conn->prepare($logSql);
+            $logStmt->bind_param('ii', $user['id'], $user['id']);
+            $logStmt->execute();
 
-            // Arahkan ke dashboard
-            header("Location: ../../pages/dashbord/index.php");
+            // Redirect ke dashboard
+            header("Location: ../../pages/dashboard/index.php");
             exit();
         } else {
-            echo "<script>alert('Password salah!');window.location.href='../../pages/users/login.php';</script>";
+            $_SESSION['login_error'] = 'Password salah.';
         }
     } else {
-        echo "<script>alert('Username tidak ditemukan!');window.location.href='../../pages/users/login.php';</script>";
+        $_SESSION['login_error'] = 'Username tidak ditemukan atau akun tidak aktif.';
     }
 
-    $stmt->close();
+    // Jika gagal login, kembali ke halaman login
+    header("Location: ../../pages/users/login.php");
+    exit();
 }
+
+ob_end_flush();

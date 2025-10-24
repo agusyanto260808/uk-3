@@ -1,59 +1,45 @@
 <?php
-session_start();
+include '../../../config/connection.php';
 include '../../partials/header.php';
 include '../../partials/navbar.php';
 include '../../partials/sidebar.php';
-include '../../../config/connection.php';
-
-// Ambil data type transportasi untuk dropdown
-$type_query = mysqli_query($conn, "SELECT * FROM type_transportasi");
 ?>
 
-<div class="container-fluid">
-    <div class="page-inner">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Tambah Data Transportasi</h5>
-                <a href="../entri data/transportasi.php" class="btn btn-secondary btn-sm">← Kembali</a>
-            </div>
-            <div class="card-body">
-                <form action="../../actions/entri data/store tr.php" method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="kode" class="form-label">Kode Transportasi</label>
-                            <input type="text" class="form-control" id="kode" name="kode" required placeholder="Misal: BUS-001">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="jumlah_kursi" class="form-label">Jumlah Kursi</label>
-                            <input type="number" class="form-control" id="jumlah_kursi" name="jumlah_kursi" required min="1" placeholder="Misal: 40">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="id_type_transportasi" class="form-label">Tipe Transportasi</label>
-                            <select class="form-select" id="id_type_transportasi" name="id_type_transportasi" required>
-                                <option value="" selected disabled>-- Pilih Tipe Transportasi --</option>
-                                <?php while ($type = mysqli_fetch_assoc($type_query)): ?>
-                                    <option value="<?= $type['id_type_transportasi']; ?>">
-                                        <?= htmlspecialchars($type['nama_type']); ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="keterangan" class="form-label">Keterangan</label>
-                            <textarea class="form-control" id="keterangan" name="keterangan" rows="2" placeholder="Opsional"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                    </div>
-                </form>
-            </div>
+<div class="container mt-4">
+    <h3>Tambah Data Jamaah</h3>
+    <form action="../../actions/data jamaah/store.php" method="POST">
+        <div class="mb-3">
+            <label>Nama Lengkap</label>
+            <input type="text" name="nama" class="form-control" required>
         </div>
-    </div>
+        <div class="mb-3">
+            <label>NIK</label>
+            <input type="text" name="nik" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Tanggal Lahir</label>
+            <input type="date" name="tanggal_lahir" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Jenis Kelamin</label>
+            <select name="jenis_kelamin" class="form-control" required>
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Alamat</label>
+            <textarea name="alamat" class="form-control" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>No. Telepon</label>
+            <input type="text" name="phone" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Simpan</button>
+        <a href="index.php" class="btn btn-secondary">Kembali</a>
+    </form>
 </div>
-
-<?php include '../../partials/footer.php'; ?>

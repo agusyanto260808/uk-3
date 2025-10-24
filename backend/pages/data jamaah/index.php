@@ -1,99 +1,69 @@
 <?php
-session_start();
-include '../../partials/header.php';
-include '../../partials/navbar.php';
-include '../../partials/sidebar.php';
 include '../../../config/connection.php';
-if (!isset($_SESSION['id_petugas'])) {
-    echo "<script>
-        alert('Silakan login terlebih dahulu');
-        window.location.href = '../users/login.php';
-    </script>";
-    exit();
-}
+include '../../partials/header.php';
+include '../../partials/sidebar.php';
+include '../../partials/navbar.php';
+
+// Ambil semua data jamaah
+$q = mysqli_query($conn, "SELECT * FROM jamaah ORDER BY created_at DESC");
 ?>
 
-<div class="container-fluid py-4">
-    <div class="page-inner">
-        <h2 class="fw-bold mb-4 text-center text-primary">📊 Entri Data</h2>
+<!DOCTYPE html>
+<html lang="id">
 
-        <div class="row justify-content-center g-4">
-            <!-- Data Transportasi -->
-            <div class="col-sm-6 col-md-4 col-lg-3">
-                <div class="card text-center border-0 shadow-sm hover-shadow-lg rounded-4">
-                    <div class="card-body">
-                        <i class="fas fa-bus fa-3x text-primary mb-3"></i>
-                        <h5 class="fw-semibold mb-3">Data Transportasi</h5>
-                        <a href="../entri data/transportasi.php" class="btn btn-primary px-4">Kelola</a>
-                    </div>
-                </div>
-            </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Jamaah</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
 
-            <!-- Data Rute -->
-            <div class="col-sm-6 col-md-4 col-lg-3">
-                <div class="card text-center border-0 shadow-sm hover-shadow-lg rounded-4">
-                    <div class="card-body">
-                        <i class="fas fa-route fa-3x text-success mb-3"></i>
-                        <h5 class="fw-semibold mb-3">Data Rute</h5>
-                        <a href="../entri data/rute.php" class="btn btn-success px-4">Kelola</a>
-                    </div>
-                </div>
-            </div>
+<body class="p-4">
+    <div class="container">
+        <h3 class="mb-4">Data Jamaah</h3>
+        <a href="create.php" class="btn btn-primary mb-3">+ Tambah Jamaah</a>
 
-            <!-- Data Penumpang -->
-            <div class="col-sm-6 col-md-4 col-lg-3">
-                <div class="card text-center border-0 shadow-sm hover-shadow-lg rounded-4">
-                    <div class="card-body">
-                        <i class="fas fa-user fa-3x text-info mb-3"></i>
-                        <h5 class="fw-semibold mb-3">Data Penumpang</h5>
-                        <a href="../entri data/penumpang.php" class="btn btn-info px-4 text-white">Kelola</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Data Petugas (hanya untuk admin) -->
-            <?php if ($_SESSION['id_level'] == 1): ?>
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <div class="card text-center border-0 shadow-sm hover-shadow-lg rounded-4">
-                        <div class="card-body">
-                            <i class="fas fa-user-shield fa-3x text-warning mb-3"></i>
-                            <h5 class="fw-semibold mb-3">Data Petugas</h5>
-                            <a href="../entri data/petugas.php" class="btn btn-warning px-4 text-white">Kelola</a>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th width="5%">No</th>
+                    <th>Nama</th>
+                    <th>NIK</th>
+                    <th>Telepon</th>
+                    <th>Alamat</th>
+                    <th width="20%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 1;
+                if (mysqli_num_rows($q) > 0):
+                    while ($d = mysqli_fetch_assoc($q)):
+                ?>
+                        <tr>
+                            <td class="text-center"><?= $no++ ?></td>
+                            <td><?= htmlspecialchars($d['nama']) ?></td>
+                            <td><?= htmlspecialchars($d['nik']) ?></td>
+                            <td><?= htmlspecialchars($d['phone']) ?></td>
+                            <td><?= nl2br(htmlspecialchars($d['alamat'])) ?></td>
+                            <td class="text-center">
+                                <a href="detail.php?id=<?= $d['id'] ?>" class="btn btn-info btn-sm">Detail</a>
+                                <a href="edit.php?id=<?= $d['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="../../actions/data jamaah/delete.php?id=<?= $d['id'] ?>"
+                                    onclick="return confirm('Yakin ingin menghapus data ini?')"
+                                    class="btn btn-danger btn-sm">Hapus</a>
+                            </td>
+                        </tr>
+                    <?php
+                    endwhile;
+                else:
+                    ?>
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada data jamaah</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
-</div>
+</body>
 
-<style>
-    /* ✅ Tambahkan jarak dari navbar agar konten tidak ketutup */
-    body {
-        padding-top: 80px;
-        /* sesuaikan dengan tinggi navbar kamu */
-        background-color: #f8faff;
-    }
-
-    .hover-shadow-lg {
-        transition: all 0.3s ease;
-    }
-
-    .hover-shadow-lg:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
-    }
-</style>
-
-<script>
-    // 🔧 Otomatis menyesuaikan jarak atas jika tinggi navbar berubah
-    document.addEventListener("DOMContentLoaded", () => {
-        const navbar = document.querySelector(".navbar");
-        if (navbar) {
-            document.body.style.paddingTop = navbar.offsetHeight + "px";
-        }
-    });
-</script>
-
-<?php include '../../partials/footer.php'; ?>
+</html>
