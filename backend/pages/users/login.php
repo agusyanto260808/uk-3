@@ -43,11 +43,11 @@ if (isset($_SESSION['user_id'])) {
       </form>
 
       <hr>
-
+      <!-- 
       <div class="text-center">
         <p class="mb-1">Belum punya akun?</p>
         <a href="register.php" class="btn btn-outline-success w-100">Daftar Akun Baru</a>
-      </div>
+      </div> -->
     </div>
   </div>
 </body>

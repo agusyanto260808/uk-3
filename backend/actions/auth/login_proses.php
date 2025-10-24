@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $logStmt->execute();
 
             // Redirect ke dashboard
-            header("Location: ../../pages/dashboard/index.php");
+            header("Location: ../../pages/dashbord/index.php");
             exit();
         } else {
             $_SESSION['login_error'] = 'Password salah.';
